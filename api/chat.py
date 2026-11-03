@@ -63,39 +63,37 @@ class FaissVectorRetriever:
             except Exception as e:
                 print(f"[FAISS Retriever] Native faiss unavailable, running optimized pure-vector retriever: {e}", file=sys.stderr)
 
-    def top_k(self, query_vector: list, k: int = 3, threshold: float = 0.60):
-        if not self.chunks or not query_vector:
+    def top_k(self, query_vector: list, query_text: str = "", k: int = 3, threshold: float = 0.20):
+        if not self.chunks:
             return []
 
-        # If native FAISS is loaded
-        if self.has_faiss and self.faiss_index is not None:
-            try:
-                import faiss  # type: ignore
-                import numpy as np  # type: ignore
-
-                q = np.array([query_vector], dtype=np.float32)
-                faiss.normalize_L2(q)
-                distances, indices = self.faiss_index.search(q, k)
-                matches = []
-                for dist, idx in zip(distances[0], indices[0]):
-                    if idx >= 0 and idx < len(self.chunks) and dist >= threshold:
-                        matches.append((self.chunks[idx], float(dist)))
-                return matches
-            except Exception as e:
-                print(f"[FAISS Retriever] FAISS search error: {e}", file=sys.stderr)
-
-        # Exact Cosine Similarity (equivalent to IndexFlatIP on normalized vectors)
-        q_norm = math.sqrt(sum(x * x for x in query_vector)) or 1.0
         scored = []
+        import re
+        tokens = [re.sub(r'[^a-z0-9]', '', t.lower()) for t in query_text.split()]
+        tokens = [t for t in tokens if len(t) >= 3 and t not in ('what', 'when', 'where', 'which', 'who', 'how', 'the', 'did', 'and')]
+        q_norm = math.sqrt(sum(x * x for x in query_vector)) or 1.0 if query_vector else 1.0
+
         for chunk in self.chunks:
+            content_lower = chunk.get("content", "").lower()
+            doc_lower = chunk.get("documentName", "").lower()
+            
+            # Vector cosine similarity
             emb = chunk.get("embedding", [])
-            if not emb or len(emb) != len(query_vector):
-                continue
-            dot = sum(a * b for a, b in zip(query_vector, emb))
-            emb_norm = math.sqrt(sum(x * x for x in emb)) or 1.0
-            score = dot / (q_norm * emb_norm)
-            if score >= threshold:
-                scored.append((chunk, score))
+            vec_score = 0.0
+            if emb and query_vector and len(emb) == len(query_vector):
+                dot = sum(a * b for a, b in zip(query_vector, emb))
+                emb_norm = math.sqrt(sum(x * x for x in emb)) or 1.0
+                vec_score = dot / (q_norm * emb_norm)
+
+            # Lexical keyword overlap score
+            lex_score = 0.0
+            if tokens:
+                matched = sum(1 for t in tokens if t in content_lower or t in doc_lower)
+                lex_score = matched / len(tokens)
+
+            final_score = max(vec_score, lex_score)
+            if final_score >= threshold:
+                scored.append((chunk, final_score))
 
         scored.sort(key=lambda x: x[1], reverse=True)
         return scored[:k]
@@ -226,7 +224,7 @@ class handler(BaseHTTPRequestHandler):
             query_vector = get_nvidia_embedding(message, nvidia_key)
 
             # 2. FAISS Top-K Retrieval
-            matches = RETRIEVER.top_k(query_vector, k=3, threshold=0.60)
+            matches = RETRIEVER.top_k(query_vector, query_text=message, k=3, threshold=0.35)
             is_grounded = len(matches) > 0
 
             # 3. Format Context

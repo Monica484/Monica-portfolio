@@ -1,0 +1,15 @@
+# Vercel Serverless Function Ignore File
+# Excludes heavy development assets and node_modules from AWS Lambda bundle
+# Prevents [LAMBDA_SIZE_EXCEEDED] limit
+
+node_modules
+.git
+.github
+*.pdf
+*.log
+bun.lock
+package-lock.json
+dist
+tests
+__pycache__
+*.pyc
