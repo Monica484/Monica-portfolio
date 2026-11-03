@@ -100,7 +100,7 @@ export class NvidiaLanguageModel {
 
       try {
         const timeoutPromise = new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error('NVIDIA Nemotron request timed out after 20 seconds.')), 20000)
+          setTimeout(() => reject(new Error('NVIDIA Nemotron request timed out after 35 seconds.')), 35000)
         );
 
         const invokePromise = this.client.invoke(messages);
