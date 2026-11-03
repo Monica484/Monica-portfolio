@@ -4,6 +4,7 @@ import { GoogleGenAI } from '@google/genai';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { GeminiLangChainEmbeddings } from './src/server/rag/embeddings.js';
+import { NvidiaLangChainEmbeddings } from './src/server/rag/nvidiaEmbeddings.js';
 import { PersistentVectorStore } from './src/server/rag/vectorStore.js';
 import { DocumentIngestionPipeline } from './src/server/rag/ingestion.js';
 import { RagPipeline } from './src/server/rag/pipeline.js';
@@ -61,8 +62,10 @@ if (apiKey) {
   });
 }
 
-// Initialize LangChain RAG Infrastructure with NVIDIA Nemotron
-const ragEmbeddings = new GeminiLangChainEmbeddings();
+// Initialize LangChain RAG Infrastructure with NVIDIA Nemotron + NVIDIAEmbeddings + FAISS-compatible vector indexing
+const ragEmbeddings = process.env.NVIDIA_API_KEY
+  ? new NvidiaLangChainEmbeddings({ dimensions: 3072 })
+  : new GeminiLangChainEmbeddings();
 const ragVectorStore = new PersistentVectorStore(ragEmbeddings);
 const ragIngestion = new DocumentIngestionPipeline(ragVectorStore);
 const ragPipeline = new RagPipeline(ragVectorStore, process.env.NVIDIA_MODEL || 'nvidia/nemotron-3.5-lightning-30b-a3b');

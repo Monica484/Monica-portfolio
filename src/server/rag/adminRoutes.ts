@@ -26,6 +26,17 @@ export function createRagAdminRouter(
         totalDocuments: docs.length,
         storagePath: vectorStore.storagePath,
         chromaConfigured: !!vectorStore.chromaUrl,
+        faiss: {
+          enabled: true,
+          indexingScheme: 'FAISS_IndexFlatIP',
+          pythonServerlessRoute: '/api/chat.py',
+          totalChunks: chunkCount,
+        },
+        embeddings: {
+          provider: process.env.NVIDIA_API_KEY ? 'NVIDIAEmbeddings' : 'GeminiLangChainEmbeddings',
+          model: process.env.NVIDIA_API_KEY ? 'nvidia/llama-3.2-nv-embedqa-1b-v1' : 'gemini-embedding-2-preview',
+          dimensions: 3072,
+        },
         langsmith: {
           enabled: !!langsmithKey,
           project: process.env.LANGSMITH_PROJECT || process.env.LANGCHAIN_PROJECT || 'nvidia-rag-chatbot',

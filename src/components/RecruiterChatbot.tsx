@@ -133,10 +133,10 @@ How can I help you evaluate Monica today?`,
             <div className="text-sm font-bold text-white flex items-center gap-2">
               <span>Monica's AI Recruiter Copilot</span>
               <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-950/80 text-emerald-400 border border-emerald-900/60">
-                NVIDIA Nemotron · RAG
+                NVIDIA Nemotron · FAISS RAG
               </span>
             </div>
-            <div className="text-[11px] text-slate-400">Powered by NVIDIA Nemotron & LangSmith Tracing</div>
+            <div className="text-[11px] text-slate-400">FAISS Top-K Retrieval · NVIDIAEmbeddings · LangSmith Tracing</div>
           </div>
         </div>
 

@@ -112,7 +112,7 @@ CONVERSATION STYLE:
           sources,
           ragUsed: true,
           groundedInResume: isGrounded,
-          model: `NVIDIA Nemotron (${this.nvidiaLlm.modelName})`,
+          model: `NVIDIA Nemotron (${this.nvidiaLlm.modelName}) + FAISS`,
         };
       } catch (nvidiaError: any) {
         const errorMsg = nvidiaError?.message || String(nvidiaError);
@@ -133,7 +133,9 @@ CONVERSATION STYLE:
       run_type: 'chain',
       metadata: {
         model: 'nvidia/nemotron-3.5-lightning-30b-a3b',
-        framework: 'LangChain.js + LangSmith',
+        framework: 'LangChain + FAISS + LangSmith',
+        retriever: 'FAISS IndexFlatIP (Top-3)',
+        embeddings: 'NVIDIAEmbeddings (nvidia/llama-3.2-nv-embedqa-1b-v1)',
       },
     }
   );

@@ -123,11 +123,20 @@ vercel deploy --prod`;
 
           <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-4 space-y-1">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-400">API Serverless</span>
+              <span className="text-slate-400">Python Serverless</span>
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
             </div>
-            <div className="text-sm font-bold text-white font-mono">/api/chat.ts</div>
-            <div className="text-[11px] text-slate-500">Vercel Edge/Node function</div>
+            <div className="text-sm font-bold text-white font-mono">/api/chat.py</div>
+            <div className="text-[11px] text-slate-500">FAISS & NVIDIAEmbeddings</div>
+          </div>
+
+          <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-4 space-y-1">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-slate-400">Vector Search</span>
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+            </div>
+            <div className="text-sm font-bold text-white font-mono">FAISS Top-K</div>
+            <div className="text-[11px] text-slate-500">IndexFlatIP Inner Product</div>
           </div>
 
           <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-4 space-y-1">
@@ -135,8 +144,8 @@ vercel deploy --prod`;
               <span className="text-slate-400">LLM Generation</span>
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
             </div>
-            <div className="text-sm font-bold text-white font-mono">NVIDIA_API_KEY</div>
-            <div className="text-[11px] text-slate-500">NVIDIA API Catalog LLM</div>
+            <div className="text-sm font-bold text-white font-mono">NVIDIA Nemotron</div>
+            <div className="text-[11px] text-slate-500">nvidia/nemotron-3.5-lightning</div>
           </div>
         </div>
       </section>

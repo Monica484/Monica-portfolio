@@ -110,13 +110,17 @@ export class NvidiaLanguageModel {
 
         // If content is empty or null, fall back to cleaned reasoning_content
         if ((!content || content === 'null' || content.length === 0) && response.additional_kwargs?.reasoning_content) {
-          const rawReasoning = String(response.additional_kwargs.reasoning_content);
-          const finalMatch = rawReasoning.match(/(?:Draft|Final response|Answer|Summary):\s*([\s\S]+)$/i);
-          content = finalMatch
-            ? finalMatch[1].replace(/✅|[\*]{2}Check[\s\S]*$/gi, '').trim()
-            : rawReasoning.replace(/Here's a thinking process:[\s\S]*?(?=\n\n[A-Z]|\n[A-Z]|$)/i, '').trim();
-          if (!content) {
-            content = rawReasoning.trim();
+          const rawReasoning = String(response.additional_kwargs.reasoning_content).trim();
+          const finalMatch = rawReasoning.match(/(?:Draft|Final response|Answer|Summary|Output):\s*([\s\S]+)$/i);
+          if (finalMatch) {
+            content = finalMatch[1].replace(/✅|[\*]{2}Check[\s\S]*$/gi, '').trim();
+          } else if (rawReasoning.includes("Here's a thinking process:")) {
+            // Split by double newline and filter out thinking step bullet points
+            const paragraphs = rawReasoning.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+            const nonThinking = paragraphs.filter(p => !p.startsWith("Here's a thinking") && !/^\d+\.\s+\*\*/.test(p) && !p.startsWith('- '));
+            content = nonThinking.length > 0 ? nonThinking[nonThinking.length - 1] : rawReasoning;
+          } else {
+            content = rawReasoning;
           }
         }
 
