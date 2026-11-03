@@ -178,19 +178,36 @@ def call_nvidia_nemotron(system_prompt: str, user_query: str, history: list, api
         }
     )
 
-    with urllib.request.urlopen(req, timeout=25) as resp:
-        res_data = json.loads(resp.read().decode("utf-8"))
-        choice = res_data.get("choices", [{}])[0]
-        msg = choice.get("message", {})
-        content = msg.get("content")
+    try:
+        with urllib.request.urlopen(req, timeout=25) as resp:
+            res_data = json.loads(resp.read().decode("utf-8"))
+            choice = res_data.get("choices", [{}])[0]
+            msg = choice.get("message", {})
+            content = msg.get("content")
 
-        if not content and msg.get("reasoning_content"):
-            content = msg.get("reasoning_content")
+            if not content and msg.get("reasoning_content"):
+                content = msg.get("reasoning_content")
 
-        if not content:
-            raise ValueError("NVIDIA Nemotron returned an empty answer.")
+            if not content:
+                raise ValueError("NVIDIA Nemotron returned an empty answer.")
 
-        return content.strip()
+            return content.strip()
+    except urllib.error.HTTPError as http_err:
+        err_body = ""
+        try:
+            err_body = http_err.read().decode("utf-8")
+        except Exception:
+            pass
+        if http_err.code in (401, 403):
+            raise ValueError(
+                f"NVIDIA API Catalog returned {http_err.code} Unauthorized. "
+                f"The NVIDIA_API_KEY on Vercel is either missing, invalid, or requires a redeployment to take effect. "
+                f"Check that NVIDIA_API_KEY (starts with 'nvapi-...') is saved in Vercel Settings > Environment Variables, "
+                f"and that you trigger a 'Redeploy' on your latest Vercel deployment."
+            )
+        raise ValueError(f"NVIDIA API Error ({http_err.code}): {err_body or http_err.reason}")
+    except Exception as e:
+        raise ValueError(f"NVIDIA connection error: {e}")
 
 class handler(BaseHTTPRequestHandler):
     """
@@ -217,8 +234,8 @@ class handler(BaseHTTPRequestHandler):
                 return
 
             # Clean NVIDIA API Key
-            raw_key = os.environ.get("NVIDIA_API_KEY", "")
-            nvidia_key = raw_key.strip("'\"")
+            raw_key = os.environ.get("NVIDIA_API_KEY") or os.environ.get("NVIDIA_KEY") or os.environ.get("NV_API_KEY") or ""
+            nvidia_key = raw_key.strip().strip("'\"").strip()
 
             # 1. Embed question using NVIDIAEmbeddings
             query_vector = get_nvidia_embedding(message, nvidia_key)

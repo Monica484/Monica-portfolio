@@ -1,3 +1,3 @@
-# Lightweight Vercel Serverless Function Dependencies (< 2 MB)
-# Resolves [LAMBDA_SIZE_EXCEEDED] by eliminating heavy native C++ binaries (faiss-cpu, torch, mkl)
-requests>=2.31.0
+# No external pip dependencies needed.
+# api/chat.py uses Python 3 built-in standard library (urllib, json, math, http.server).
+# This keeps the lambda function size under 1.5 MB and completely avoids [LAMBDA_SIZE_EXCEEDED].
