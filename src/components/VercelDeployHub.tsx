@@ -19,7 +19,13 @@ export const VercelDeployHub: React.FC = () => {
       "source": "/(.*)",
       "destination": "/index.html"
     }
-  ]
+  ],
+  "functions": {
+    "api/chat.py": {
+      "includeFiles": "data/vectorstore/**",
+      "excludeFiles": "{node_modules/**,src/**,public/**,dist/**,package-lock.json,bun.lock,*.pdf,server.ts}"
+    }
+  }
 }`;
 
   const copyToClipboard = (text: string, id: string) => {
