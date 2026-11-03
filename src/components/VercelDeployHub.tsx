@@ -68,13 +68,13 @@ vercel deploy --prod`;
           </div>
           <h2 className="text-2xl font-bold text-white">1-Click Cloud Deployment</h2>
           <p className="text-xs text-slate-300 max-w-xl leading-relaxed">
-            Pre-configured with <code className="text-blue-400 font-mono">vercel.json</code>, automated Vite bundling, zero serverless cold-starts, and dynamic Gemini API routing.
+            Pre-configured with <code className="text-blue-400 font-mono">vercel.json</code>, Python serverless function (<code className="text-blue-400 font-mono">/api/chat.py</code>), FAISS vector retriever, and NVIDIA Nemotron LLM.
           </p>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0">
           <a
-            href={`https://vercel.com/new/clone?repository-url=${encodeURIComponent('https://github.com/Monica484/pharmacy-sales-analytics-web-apllication')}&env=GEMINI_API_KEY&envDescription=Required%20for%20Monica%20AI%20Recruiter%20Copilot`}
+            href={`https://vercel.com/new/clone?repository-url=${encodeURIComponent('https://github.com/Monica484/monica-ai-portfolio')}&env=NVIDIA_API_KEY,LANGSMITH_API_KEY&envDescription=Required%20for%20NVIDIA%20Nemotron%20and%20LangSmith%20Tracing`}
             target="_blank"
             rel="noreferrer"
             className="px-6 py-3 text-xs font-bold text-black bg-white hover:bg-slate-200 rounded-lg transition-all shadow-lg flex items-center gap-2 whitespace-nowrap"
@@ -94,6 +94,25 @@ vercel deploy --prod`;
           >
             Open Vercel Dashboard
           </a>
+        </div>
+      </section>
+
+      {/* Notice: Why Vercel still has the old project */}
+      <section className="rounded-xl border border-amber-900/40 bg-amber-950/20 p-5 space-y-3">
+        <div className="flex items-center gap-2 text-amber-400 font-semibold text-sm">
+          <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span>Why your Vercel URL still shows the old Pharmacy project:</span>
+        </div>
+        <p className="text-xs text-slate-300 leading-relaxed">
+          Your existing Vercel project is currently connected to your previous GitHub repository (<code className="text-amber-300 font-mono">pharmacy-sales-analytics-web-apllication</code>). Vercel builds strictly from whichever GitHub repository or branch is linked to it.
+        </p>
+        <div className="text-xs text-slate-300 space-y-1.5 pl-2 border-l-2 border-amber-800">
+          <p><strong>To display this new AI Dashboard on Vercel:</strong></p>
+          <p>1. <strong>Push this new project</strong> to a fresh GitHub repository (e.g. <code className="text-blue-300 font-mono">github.com/Monica484/monica-ai-portfolio</code>).</p>
+          <p>2. In your Vercel Dashboard, click <strong>"Add New..." &gt; "Project"</strong>, import <code className="text-blue-300 font-mono">monica-ai-portfolio</code>, add <code className="text-emerald-300 font-mono">NVIDIA_API_KEY</code>, and click <strong>Deploy</strong>.</p>
+          <p>3. Or in your existing Vercel project, go to <strong>Settings &gt; Git</strong> and re-link the repository to the new code!</p>
         </div>
       </section>
 
